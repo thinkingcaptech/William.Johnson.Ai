@@ -175,10 +175,57 @@
             outline: 2px solid #a21caf;
             background: rgba(44,46,76,0.97);
         }
+        /* --- Tetris Section Styling --- */
+        .tetris-section {
+            margin: 2.5rem auto 0 auto;
+            max-width: 340px;
+            background: rgba(30, 20, 60, 0.84);
+            border-radius: 22px;
+            box-shadow: 0 4px 32px #7c3aed55, 0 1.5px 16px 2px #06b6d433;
+            padding: 1.4rem 1.2rem 2rem 1.2rem;
+            border: 2px solid #a21caf;
+            text-align: center;
+            position: relative;
+        }
+        .tetris-section h2 {
+            margin: 0 0 1.2rem 0;
+            font-size: 1.32rem;
+            color: #a21caf;
+            text-shadow: 0 0 8px #06b6d4, 0 2px 8px #000;
+            letter-spacing: 1px;
+        }
+        .tetris-score {
+            font-size: 1.18rem;
+            color: #06b6d4;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 6px #a21caf, 0 1px 2px #000;
+            font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+            font-weight: 700;
+        }
+        .tetris-controls {
+            margin-top: 1rem;
+            font-size: 0.98rem;
+            color: #c7d7f7;
+            opacity: 0.8;
+            text-shadow: 0 2px 8px #000, 0 0 8px #06b6d4;
+        }
+        #tetris-canvas {
+            background: #191c24;
+            display: block;
+            margin: 0 auto 0.5rem auto;
+            border-radius: 12px;
+            border: 2px solid #06b6d4;
+            box-shadow: 0 2px 24px #a21caf77, 0 0 8px #06b6d4cc;
+            outline: none;
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            aspect-ratio: 10/20;
+        }
         @media (max-width: 700px) {
             .container { padding: 1rem; }
-            .skills-list, .services-list { flex-direction: column; }
-            .hero h1 { font-size: 2rem; }
+            .tetris-section { padding: 1rem 0.5rem 1.4rem 0.5rem; }
+            #tetris-canvas { max-width: 94vw; }
         }
     </style>
 </head>
@@ -206,9 +253,265 @@
             </p>
             <a class="cta-btn" href="hire.html">Hire Me</a>
         </section>
+        <!-- Tetris Game Section -->
+        <section class="tetris-section">
+            <h2>Tetris Break</h2>
+            <div class="tetris-score">Score: <span id="tetris-score">0</span></div>
+            <canvas id="tetris-canvas" width="160" height="320" tabindex="1"></canvas>
+            <div class="tetris-controls">
+                &larr;/&rarr; Move &nbsp; | &nbsp; &darr; Drop &nbsp; | &nbsp; Q/W Rotate &nbsp; | &nbsp; <b>Space</b> Hard Drop
+            </div>
+        </section>
     </div>
     <footer>
         &copy; 2025 Will.Johnson.AI · Remote AI & Automation Specialist · Built with AI
     </footer>
+    <script>
+    // --- Tetris Game Logic ---
+    (function() {
+        // --- Config ---
+        const ROWS = 20, COLS = 10;
+        const COLORS = [
+            null, // empty
+            "#a21caf", // purple
+            "#06b6d4", // cyan
+            "#f472b6", // pink
+            "#7c3aed", // violet
+            "#3b82f6", // blue
+            "#fbbf24", // gold
+            "#c026d3"  // magenta
+        ];
+        const SHADOW_COLOR = "#23263a";
+        const PIECES = {
+            'T': [[0,0,0],[1,1,1],[0,1,0]],
+            'O': [[2,2],[2,2]],
+            'L': [[0,3,0],[0,3,0],[0,3,3]],
+            'J': [[0,4,0],[0,4,0],[4,4,0]],
+            'I': [[0,5,0,0],[0,5,0,0],[0,5,0,0],[0,5,0,0]],
+            'S': [[0,6,6],[6,6,0],[0,0,0]],
+            'Z': [[7,7,0],[0,7,7],[0,0,0]],
+        };
+
+        // --- State ---
+        let arena = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+        let dropCounter = 0, dropInterval = 650, lastTime = 0, score = 0;
+        const player = { pos: {x: 0, y: 0}, matrix: null, next: null };
+        let BLOCK = 16; // Will be set by resize
+        let canvas = document.getElementById('tetris-canvas');
+        let ctx = canvas.getContext('2d');
+
+        // --- Responsive Canvas ---
+        function resizeCanvas() {
+            // Keep aspect ratio 10:20
+            let w = canvas.parentElement.offsetWidth;
+            let h = w * 2;
+            if(h > window.innerHeight * 0.7) {
+                h = window.innerHeight * 0.7;
+                w = h / 2;
+            }
+            canvas.width = Math.round(w);
+            canvas.height = Math.round(h);
+            BLOCK = Math.floor(Math.min(
+                canvas.width / COLS,
+                canvas.height / ROWS
+            ));
+            ctx.setTransform(BLOCK, 0, 0, BLOCK, 0, 0);
+        }
+
+        // --- Game Logic ---
+        function createPiece(type) {
+            return PIECES[type].map(row => row.slice());
+        }
+
+        function collide(arena, player) {
+            const [m, o] = [player.matrix, player.pos];
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function merge(arena, player) {
+            player.matrix.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val) arena[y + player.pos.y][x + player.pos.x] = val;
+                });
+            });
+        }
+
+        function rotate(matrix, dir) {
+            for (let y = 0; y < matrix.length; ++y) {
+                for (let x = 0; x < y; ++x) {
+                    [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+                }
+            }
+            if (dir > 0) matrix.forEach(row => row.reverse());
+            else matrix.reverse();
+        }
+
+        function playerDrop() {
+            player.pos.y++;
+            if (collide(arena, player)) {
+                player.pos.y--;
+                merge(arena, player);
+                playerReset();
+                arenaSweep();
+                updateScore();
+            }
+            dropCounter = 0;
+        }
+
+        function playerMove(dir) {
+            player.pos.x += dir;
+            if (collide(arena, player)) player.pos.x -= dir;
+        }
+
+        function playerRotate(dir) {
+            const pos = player.pos.x;
+            let offset = 1;
+            rotate(player.matrix, dir);
+            while (collide(arena, player)) {
+                player.pos.x += offset;
+                offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > player.matrix[0].length) {
+                    rotate(player.matrix, -dir);
+                    player.pos.x = pos;
+                    return;
+                }
+            }
+        }
+
+        function arenaSweep() {
+            let rowCount = 1;
+            outer: for (let y = arena.length - 1; y >= 0; --y) {
+                for (let x = 0; x < arena[y].length; ++x) {
+                    if (!arena[y][x]) continue outer;
+                }
+                const row = arena.splice(y, 1)[0].fill(0);
+                arena.unshift(row);
+                score += rowCount * 15;
+                rowCount *= 2;
+            }
+        }
+
+        function playerReset() {
+            const pieces = Object.keys(PIECES);
+            player.matrix = player.next || createPiece(pieces[pieces.length * Math.random() | 0]);
+            player.next = createPiece(pieces[pieces.length * Math.random() | 0]);
+            player.pos.y = 0;
+            player.pos.x = (COLS / 2 | 0) - (player.matrix[0].length / 2 | 0);
+            if (collide(arena, player)) {
+                arena.forEach(row => row.fill(0));
+                score = 0;
+                updateScore();
+            }
+        }
+
+        function drawBlock(ctx, x, y, val, shadow = false) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(x, y, 1, 1, 0.22);
+            ctx.closePath();
+            ctx.fillStyle = shadow ? SHADOW_COLOR : COLORS[val];
+            ctx.shadowColor = shadow ? "#0008" : COLORS[val] + "99";
+            ctx.shadowBlur = shadow ? 0 : 0.18;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawMatrix(ctx, matrix, offset, shadow = false) {
+            matrix.forEach((row, y) => {
+                row.forEach((val, x) => {
+                    if (val) drawBlock(ctx, x + offset.x, y + offset.y, val, shadow);
+                });
+            });
+        }
+
+        function drawArena() {
+            ctx.clearRect(0, 0, COLS, ROWS);
+            ctx.fillStyle = "#191c24";
+            ctx.fillRect(0, 0, COLS, ROWS);
+            drawMatrix(ctx, arena, {x:0, y:0});
+        }
+
+        function drawPlayer() {
+            // Draw hard drop shadow
+            let ghostY = player.pos.y;
+            while (!collide(arena, {matrix: player.matrix, pos: {x: player.pos.x, y: ghostY+1}})) {
+                ghostY++;
+            }
+            drawMatrix(ctx, player.matrix, {x: player.pos.x, y: ghostY}, true);
+            // Draw real piece
+            drawMatrix(ctx, player.matrix, player.pos);
+        }
+
+        function draw() {
+            drawArena();
+            drawPlayer();
+        }
+
+        function update(time = 0) {
+            const delta = time - lastTime;
+            lastTime = time;
+            dropCounter += delta;
+            if (dropCounter > dropInterval) playerDrop();
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function updateScore() {
+            document.getElementById('tetris-score').textContent = score;
+        }
+
+        // --- Controls ---
+        document.addEventListener('keydown', e => {
+            if (e.target !== document.body && e.target !== canvas) return;
+            if (e.repeat) return;
+            if (e.key === 'ArrowLeft') playerMove(-1);
+            else if (e.key === 'ArrowRight') playerMove(1);
+            else if (e.key === 'ArrowDown') playerDrop();
+            else if (e.key.toLowerCase() === 'q') playerRotate(-1);
+            else if (e.key.toLowerCase() === 'w') playerRotate(1);
+            else if (e.key === ' ') {
+                // Hard drop!
+                while (!collide(arena, player)) {
+                    player.pos.y++;
+                }
+                player.pos.y--;
+                merge(arena, player);
+                playerReset();
+                arenaSweep();
+                updateScore();
+                dropCounter = 0;
+            }
+        });
+
+        // --- Initialize ---
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', resizeCanvas);
+
+        function startTetris() {
+            resizeCanvas();
+            playerReset();
+            updateScore();
+            update();
+            canvas.focus();
+        }
+
+        // Focus canvas on click for mobile
+        canvas.addEventListener('click', () => canvas.focus());
+
+        // Start after DOM ready
+        if(document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", startTetris);
+        } else {
+            startTetris();
+        }
+    })();
+    </script>
 </body>
 </html>
