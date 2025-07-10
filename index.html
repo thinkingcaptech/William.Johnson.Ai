@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will.Johnson.AI | Remote & Contract AI Specialist</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Inter:wght@400;700&display=swap');
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            color: #fff;
+            background: #0d1122;
+            min-height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -2;
+            background: url('https://d41chssnpqdne.cloudfront.net/user_upload_by_module/chat_bot/files/120151275/xIkuyCTaoupXEjHT.png?Expires=1753318037&Signature=DghG7NsY7wu3M4l2UG2ZAPH3-0ia1EMAjdN4VgvHHJorb-bi8RBPIYkgDrnO1iAbS5B9MOvxQkqRSRukhEtxLua8vjQRIYRi2iR~6Jmpld52yyH-XhQJ9LNhor6rGSurq2hy-hHKjtRUmI4IAZpBJ0sFrbWvVTnE87CKeamGrXuMPtXJIQ-zcMdRCxRdRDm2kHXhy~POr2C0K0w6wlcNJ1MZIPDorE2ETEK~s1Mob5tJxjISOsqYkBgWBeGqWTl~sRbvpX8xGyE5HPfxYSJOKtq~rxJteV2LNmJ2UfV08opKRyg1ZB-sZU45YgCEhguPQ~vXYFI8oEq6norsvkj7sQ__&Key-Pair-Id=K3USGZIKWMDCSX') center center/cover no-repeat;
+            filter: brightness(0.55) blur(1.5px);
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: linear-gradient(120deg, rgba(14,17,44,0.77) 60%, rgba(60,10,90,0.55) 100%);
+            pointer-events: none;
+        }
+        header {
+            background: rgba(30, 20, 60, 0.80);
+            box-shadow: 0 4px 32px #8b5cf6cc;
+            color: #fff;
+            padding: 2.5rem 0 2rem 0;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            backdrop-filter: blur(4px);
+            border-bottom: 2px solid #06b6d4;
+        }
+        nav { margin: 1rem 0; }
+        nav a {
+            color: #fff;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 6px #06b6d4, 0 0 2px #fff;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        nav a:hover {
+            color: #f472b6;
+            text-shadow: 0 0 8px #f472b6, 0 0 2px #fff;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: rgba(28, 20, 48, 0.55);
+            border-radius: 22px;
+            box-shadow: 0 8px 40px #06b6d444, 0 1.5px 16px 2px #a21caf33;
+            padding: 2rem;
+            backdrop-filter: blur(12px) saturate(1.4);
+            border: 1.5px solid #3b82f6;
+        }
+        h1, h2 {
+            margin-top: 0;
+            font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 12px #06b6d4, 0 2px 8px #000;
+        }
+        .hero {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(34,38,70,0.42);
+            border-radius: 18px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 24px #a21caf66;
+            backdrop-filter: blur(2px);
+        }
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            color: #7c3aed;
+            text-shadow: 0 0 16px #f472b6, 0 0 8px #06b6d4, 0 1px 1px #000;
+        }
+        .hero p {
+            font-size: 1.35rem;
+            color: #c7d7f7;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 8px #000, 0 0 8px #06b6d4;
+        }
+        .cta-btn {
+            background: linear-gradient(90deg, #06b6d4 0%, #a21caf 100%);
+            color: #fff;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.15rem;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 2px 20px #06b6d4bb, 0 0 8px #a21caf99;
+            transition: background 0.2s, box-shadow 0.2s;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px #fff, 0 0 4px #06b6d4;
+        }
+        .cta-btn:hover {
+            background: linear-gradient(90deg, #a21caf 0%, #06b6d4 100%);
+            box-shadow: 0 4px 32px #f472b6cc, 0 0 16px #06b6d4cc;
+            color: #fff;
+        }
+        section { margin-bottom: 2.5rem; }
+        .skills-list, .services-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .skill, .service {
+            flex: 1 1 240px;
+            background: rgba(44, 48, 80, 0.65);
+            border-radius: 14px;
+            padding: 1.2rem 1rem;
+            box-shadow: 0 2px 16px #06b6d433, 0 0.5px 6px #a21caf33;
+            margin-bottom: 0.5rem;
+            backdrop-filter: blur(3px);
+            border: 1.2px solid #7c3aed;
+        }
+        .skill h3, .service h3 {
+            margin: 0 0 0.7rem 0;
+            color: #06b6d4;
+            text-shadow: 0 0 8px #f472b6, 0 2px 8px #000;
+            font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+        }
+        .remote-section {
+            background: rgba(38, 44, 80, 0.70);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 2px 20px #a21caf55;
+            backdrop-filter: blur(2px);
+            border: 1.2px solid #06b6d4;
+        }
+        ul { margin: 0.7rem 0 0 1.2rem; }
+        footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            background: rgba(22,22,44,0.95);
+            color: #bbb;
+            margin-top: 2rem;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+            box-shadow: 0 -2px 24px #a21caf66;
+            backdrop-filter: blur(2px);
+            border-top: 2px solid #7c3aed;
+            font-family: 'Orbitron', 'Inter', Arial, sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+        }
+        label { font-weight: 600; color: #f472b6; }
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.7rem;
+            border-radius: 7px;
+            border: 1.3px solid #06b6d4;
+            background: rgba(34,36,56,0.92);
+            color: #fff;
+            font-size: 1rem;
+            box-shadow: 0 0 6px #a21caf44;
+        }
+        input:focus, textarea:focus {
+            outline: 2px solid #a21caf;
+            background: rgba(44,46,76,0.97);
+        }
+        @media (max-width: 700px) {
+            .container { padding: 1rem; }
+            .skills-list, .services-list { flex-direction: column; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Will.Johnson.AI</h1>
+            <p>Your Remote & Contract AI Specialist</p>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="skills.html">Skills</a>
+            <a href="services.html">Services</a>
+            <a href="hire.html">Hire Me</a>
+            <a href="contact.html">Contact</a>
+            <a href="forum.html">Forum</a>
+        </nav>
+    </header>
+    <div class="container">
+        <section class="hero">
+            <h1>Empowering Your Business with AI, Automation, and Remote Expertise</h1>
+            <p>
+                I help businesses and entrepreneurs automate, scale, and innovate—using zero-cost tools, AI, and creative problem-solving. Available for remote and contract work worldwide.
+            </p>
+            <a class="cta-btn" href="hire.html">Hire Me</a>
+        </section>
+    </div>
+    <footer>
+        &copy; 2025 Will.Johnson.AI · Remote AI & Automation Specialist · Built with AI
+    </footer>
+</body>
+</html>
