@@ -2,7 +2,7 @@
 
 ## About
 This is a static HTML/CSS website for a remote AI specialist.  
-Live demo: https://thinkingcaptech.github.io/William.Johnson.Ai/
+Live demo: [https://thinkingcaptech.github.io/William.Johnson.Ai/](https://thinkingcaptech.github.io/William.Johnson.Ai/index.html)
 
 ## Features
 - Responsive layout for desktop/mobile
