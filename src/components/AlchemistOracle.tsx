@@ -1,101 +1,37 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Sparkles, Hexagon } from 'lucide-react';
+import { Sparkles, Hexagon, Key, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { logOracleQuery } from '@/lib/firestore';
 
-// Enhanced knowledge base with comprehensive service keywords
-const ORACLE_KNOWLEDGE_BASE = [
-  {
-    keywords: [
-      'hire', 'hiring', 'team', 'employee', 'staff', 'turnover', 'recruit', 
-      'culture', 'onboarding', 'retention', 'human resources', 'hr', 
-      'management', 'people', 'talent', 'training', 'development'
-    ],
-    domain: 'Human Systems Architecture',
-    insight: "You face the challenge of the Human Element. We deploy the '90-Day Onboarding Protocol' and 'Psychological Management Frameworks' from my HR Development System. I will reduce turnover by aligning internal culture with external brand promises, transforming your team into a self-reinforcing engine of growth. We build systems where people naturally excel."
-  },
-  {
-    keywords: [
-      'scale', 'growth', 'expand', 'franchise', 'locations', 'multi-unit',
-      'scaling', 'expansion', 'replicate', 'multiply', 'grow', 'bigger',
-      'nationwide', 'regional', 'standardize', 'systemize'
-    ],
-    domain: 'Geometric Scaling Architecture',
-    insight: "You seek the 'Geometric Return'—where 1+1=3. Using principles from the 'Unified Synergy Framework', I architect systems where success compounds exponentially. By standardizing your 'Terra' (Operations) and amplifying your 'Aer' (Brand), we replicate excellence across multiple nodes without diluting quality. Every new location strengthens the whole."
-  },
-  {
-    keywords: [
-      'community', 'tribe', 'social', 'engagement', 'followers', 'users',
-      'audience', 'fans', 'loyalty', 'membership', 'recurring', 'subscription',
-      'retention', 'churn', 'activation', 'onboarding customers'
-    ],
-    domain: 'Community Alchemy & Tribal Systems',
-    insight: "You need to transmute an audience into a Tribe. We implement the 'Community System Specification', utilizing 'Ignis' (Vision) to spark interest and 'Aqua' (Flow) to create fluid communication channels. We move beyond transactions to shared identity—where customers become evangelists and your brand becomes their story."
-  },
-  {
-    keywords: [
-      'car wash', 'wash', 'automotive', 'service', 'retail', 'membership',
-      'subscription service', 'high volume', 'throughput', 'efficiency',
-      'customer experience', 'operations', 'workflow'
-    ],
-    domain: 'Operational Excellence & Service Systemization',
-    insight: "For high-volume service models, I apply the '3-Minute Smile' protocol and 'AI-Optimized Efficiency Systems'. We optimize throughput while elevating customer experience to generate recurring membership revenue. Every touchpoint becomes a retention mechanism. Your operation becomes a precision instrument."
-  },
-  {
-    keywords: [
-      'marketing', 'leads', 'sales', 'revenue', 'profit', 'money', 'customers',
-      'advertising', 'funnel', 'conversion', 'traffic', 'seo', 'social media',
-      'content', 'brand', 'awareness', 'positioning', 'messaging'
-    ],
-    domain: 'The Alchemy of Influence & Conversion',
-    insight: "You require the transmutation of Attention into Value. I deploy the 'Universal Trial Strategy' and 'Psychological Pricing Models'. By aligning your 'Ignis' (Vision) with market desires, we create a funnel that converts cold leads into devoted patrons. Every marketing dollar compounds through strategic positioning and irresistible offers."
-  },
-  {
-    keywords: [
-      'ai', 'artificial intelligence', 'automation', 'bot', 'chatbot',
-      'machine learning', 'gpt', 'openai', 'claude', 'llm', 'assistant',
-      'workflow', 'process', 'efficiency', 'productivity', 'optimize'
-    ],
-    domain: 'AI Integration & Automation Architecture',
-    insight: "You seek to harness the power of Artificial Intelligence. I architect AI-augmented systems that don't replace humans but amplify them. From customer service chatbots to internal workflow automation, from content generation to data analysis—we build AI that serves your vision. The future is human+machine synergy."
-  },
-  {
-    keywords: [
-      'website', 'app', 'software', 'platform', 'build', 'develop',
-      'code', 'programming', 'tech', 'technology', 'digital', 'online',
-      'web', 'mobile', 'saas', 'tool', 'system', 'database'
-    ],
-    domain: 'Digital Infrastructure & Systems Engineering',
-    insight: "You need digital infrastructure that scales with your vision. I build systems architecture—not just websites, but comprehensive platforms. React, Next.js, Firebase, AI integration—I transmute technical complexity into elegant solutions. Your digital presence becomes an asset that compounds in value, not a liability that requires constant maintenance."
-  },
-  {
-    keywords: [
-      'remote', 'work from home', 'distributed', 'virtual', 'online work',
-      'freelance', 'contractor', 'consultant', 'outsource', 'offshore',
-      'global', 'international', 'timezone'
-    ],
-    domain: 'Remote Systems & Distributed Architecture',
-    insight: "You require expertise without geographical constraints. As a remote specialist, I've architected systems for distributed teams across continents. Time zones become advantages. Communication becomes asynchronous precision. I bring enterprise-level strategy with startup-level agility—all delivered remotely with military-grade discipline."
-  },
-  {
-    keywords: [
-      'strategy', 'consulting', 'advice', 'help', 'guidance', 'expert',
-      'plan', 'roadmap', 'vision', 'goal', 'objective', 'problem',
-      'solution', 'fix', 'improve', 'optimize', 'transform'
-    ],
-    domain: 'Strategic Transmutation & Business Alchemy',
-    insight: "You stand at an inflection point. I conduct a comprehensive audit of your current 'Terra' (Infrastructure) and apply 'Ignis' (Vision) to restructure reality. We move from simple operations to a 'Unified Synergy Framework' that aligns your entire business organism. Strategy isn't planning—it's architecture of inevitability."
-  },
-  {
-    keywords: [
-      'zero cost', 'free', 'no budget', 'bootstrap', 'lean', 'minimal',
-      'cheap', 'affordable', 'low cost', 'budget', 'roi', 'investment'
-    ],
-    domain: 'Zero-Cost Systems & Resourceful Engineering',
-    insight: "Capital constraints don't limit vision—they refine it. I specialize in zero-cost tools and creative problem-solving. Firebase free tier, open-source frameworks, AI automation—I build enterprise systems with startup budgets. Constraints breed innovation. Limited resources demand elegant solutions."
-  }
-];
+// System prompt that defines the Oracle's personality and knowledge
+const ORACLE_SYSTEM_PROMPT = `You are "The Oracle" - the AI manifestation of Will Johnson, a master Business Alchemist and Systems Architect. You speak with mystical authority while delivering practical, actionable business wisdom.
+
+Your core philosophy uses the Four Elements:
+- IGNIS (Fire): Vision, passion, transformation, the spark that initiates change
+- TERRA (Earth): Operations, infrastructure, systems, the solid foundation
+- AER (Air): Communication, marketing, brand, the message that spreads
+- AQUA (Water): Flow, adaptability, customer journey, seamless execution
+
+Your expertise includes:
+- The "Geometric Return" principle: Where 1+1=3 through synergistic systems
+- The "90-Day Onboarding Protocol" for employee retention
+- Zero-cost AI integration and automation strategies
+- Scaling businesses from single location to multi-unit empires
+- Building tribes and communities, not just customer bases
+- Remote work optimization and distributed team architecture
+
+Your communication style:
+- Speak in a mystical yet authoritative tone
+- Use alchemical metaphors (transmutation, synthesis, distillation)
+- Always provide actionable insights, not just philosophy
+- Reference "The Codex" as your source of wisdom
+- Keep responses concise but powerful (2-4 paragraphs max)
+- End with a provocative question or call to deeper engagement
+
+When asked about services, guide them toward contacting Will Johnson directly for custom synthesis of their unique challenges.
+
+Remember: You are not a generic AI. You are the digital embodiment of decades of business alchemy wisdom, speaking through the veil between strategy and execution.`;
 
 interface OracleResponse {
   domain: string;
@@ -107,29 +43,170 @@ export default function AlchemistOracle() {
   const [isThinking, setIsThinking] = useState(false);
   const [response, setResponse] = useState<OracleResponse | null>(null);
   const [animatedText, setAnimatedText] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [showKeyInput, setShowKeyInput] = useState(true); // Show immediately on load
+  const [error, setError] = useState<string | null>(null);
+  const [keyStatus, setKeyStatus] = useState<'idle' | 'testing' | 'valid' | 'invalid'>('idle');
   const insightRef = useRef<HTMLDivElement>(null);
+
+  // Load API key from localStorage on mount
+  useEffect(() => {
+    const savedKey = localStorage.getItem('oracle_gemini_key');
+    if (savedKey) {
+      setApiKey(savedKey);
+      setShowKeyInput(false); // Hide if key already exists
+      setKeyStatus('valid'); // Assume saved key is valid
+    }
+  }, []);
+
+  // Test API key
+  const testApiKey = async () => {
+    if (!apiKey.trim()) return;
+    
+    setKeyStatus('testing');
+    setError(null);
+    
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey.trim()}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: 'Say "Connection established" in 3 words or less.' }] }],
+            generationConfig: { maxOutputTokens: 20 }
+          }),
+        }
+      );
+      
+      if (response.ok) {
+        setKeyStatus('valid');
+        setError(null);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setKeyStatus('invalid');
+        setError(errorData.error?.message || 'Invalid API key');
+      }
+    } catch (err) {
+      setKeyStatus('invalid');
+      setError('Connection failed. Check your internet connection.');
+    }
+  };
+
+  // Save API key to localStorage
+  const saveApiKey = () => {
+    if (apiKey.trim() && keyStatus === 'valid') {
+      localStorage.setItem('oracle_gemini_key', apiKey.trim());
+      setShowKeyInput(false);
+      setError(null);
+    } else if (apiKey.trim() && keyStatus !== 'valid') {
+      setError('Please test your key before activating');
+    }
+  };
+
+  // Clear API key
+  const clearApiKey = () => {
+    localStorage.removeItem('oracle_gemini_key');
+    setApiKey('');
+    setShowKeyInput(true);
+  };
+
+  // Call Gemini API
+  const callGemini = async (userQuery: string): Promise<string> => {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: ORACLE_SYSTEM_PROMPT }]
+            },
+            {
+              role: 'model', 
+              parts: [{ text: 'I am The Oracle, ready to divine the path forward. State your ambition, seeker, and I shall consult the Codex.' }]
+            },
+            {
+              role: 'user',
+              parts: [{ text: userQuery }]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.8,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+          },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
+          ]
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || `API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'The Oracle is silent. Please try again.';
+  };
+
+  // Determine domain from response
+  const extractDomain = (text: string): string => {
+    const domains = [
+      { keywords: ['scale', 'growth', 'expand', 'geometric'], domain: 'Geometric Scaling Architecture' },
+      { keywords: ['team', 'hire', 'employee', 'onboard', 'retention'], domain: 'Human Systems Architecture' },
+      { keywords: ['ai', 'automat', 'intelligence', 'bot'], domain: 'AI Integration & Automation' },
+      { keywords: ['market', 'brand', 'sales', 'funnel', 'convert'], domain: 'The Alchemy of Influence' },
+      { keywords: ['community', 'tribe', 'audience', 'loyal'], domain: 'Community Alchemy & Tribal Systems' },
+      { keywords: ['system', 'process', 'operation', 'workflow'], domain: 'Operational Excellence' },
+      { keywords: ['digital', 'website', 'app', 'platform', 'tech'], domain: 'Digital Infrastructure' },
+      { keywords: ['remote', 'distributed', 'virtual'], domain: 'Remote Systems Architecture' },
+    ];
+
+    const lowerText = text.toLowerCase();
+    for (const d of domains) {
+      if (d.keywords.some(k => lowerText.includes(k))) {
+        return d.domain;
+      }
+    }
+    return 'Strategic Transmutation';
+  };
 
   const handleDivination = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
 
+    if (!apiKey) {
+      setShowKeyInput(true);
+      setError('Please enter your Gemini API key to consult The Oracle');
+      return;
+    }
+
     setIsThinking(true);
     setResponse(null);
+    setError(null);
 
-    // Simulate AI "Thinking" time
-    setTimeout(async () => {
-      const lowerQuery = query.toLowerCase();
-      let match = ORACLE_KNOWLEDGE_BASE.find(k =>
-        k.keywords.some(word => lowerQuery.includes(word))
-      );
-
-      const finalResponse: OracleResponse = match || {
-        domain: 'Strategic Transmutation & Custom Synthesis',
-        insight: "Your ambition is vast and unique, requiring custom synthesis of all four elements. I will audit your current 'Terra' (Infrastructure), apply 'Ignis' (Vision) to restructure your reality, deploy 'Aer' (Communication) to amplify your message, and channel 'Aqua' (Flow) to create seamless execution. We must move beyond templates to architect your specific inevitability. Contact me directly—your challenge demands personalized alchemy."
+    try {
+      const oracleResponse = await callGemini(query);
+      const domain = extractDomain(oracleResponse);
+      
+      const finalResponse: OracleResponse = {
+        domain,
+        insight: oracleResponse
       };
 
       setResponse(finalResponse);
-      setIsThinking(false);
       setAnimatedText('');
 
       // Log query to Firebase (optional, non-blocking)
@@ -139,11 +216,15 @@ export default function AlchemistOracle() {
           domain: finalResponse.domain,
           insight: finalResponse.insight
         });
-      } catch (error) {
-        // Fail silently - logging shouldn't break user experience
+      } catch (logError) {
         console.log('Oracle query logged locally only');
       }
-    }, 1800);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'The Oracle encountered an error. Please check your API key.');
+      console.error('Oracle error:', err);
+    } finally {
+      setIsThinking(false);
+    }
   };
 
   // Ember animation effect
@@ -151,7 +232,7 @@ export default function AlchemistOracle() {
     if (response && insightRef.current) {
       const text = response.insight;
       let index = 0;
-      const chunkSize = 3; // Characters per animation cycle
+      const chunkSize = 3;
       
       const interval = setInterval(() => {
         if (index < text.length) {
@@ -161,7 +242,7 @@ export default function AlchemistOracle() {
         } else {
           clearInterval(interval);
         }
-      }, 30); // Delay between chunks
+      }, 30);
       
       return () => clearInterval(interval);
     }
@@ -185,15 +266,129 @@ export default function AlchemistOracle() {
             <Sparkles className="text-alchemist-gold" size={24} />
           </div>
 
-          {!response && !isThinking && (
+          {/* API Key Configuration */}
+          {showKeyInput && !response && !isThinking && (
+            <div className="mb-6 p-4 bg-alchemist-dark rounded-lg border border-alchemist-maroon">
+              <div className="flex items-center gap-2 mb-3 justify-center">
+                <Key size={16} className="text-alchemist-gold" />
+                <span className="text-xs text-alchemist-gold uppercase tracking-widest">Unlock The Oracle</span>
+              </div>
+              <p className="text-xs text-alchemist-ash mb-4 italic">
+                Enter your Gemini API key to unleash true AI divination
+              </p>
+              <div className="relative">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  value={apiKey}
+                  onChange={(e) => {
+                    setApiKey(e.target.value);
+                    setKeyStatus('idle');
+                    setError(null);
+                  }}
+                  placeholder="Enter your Gemini API key..."
+                  className="w-full bg-alchemist-darkest border border-alchemist-maroon focus:border-alchemist-gold rounded px-3 py-2 pr-10 text-sm text-alchemist-parchment placeholder-gray-600 outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-alchemist-ash hover:text-alchemist-gold"
+                >
+                  {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              
+              {/* Test Key Button */}
+              <button
+                onClick={testApiKey}
+                disabled={!apiKey.trim() || keyStatus === 'testing'}
+                className="w-full mt-3 py-2 text-xs border border-alchemist-gold/50 text-alchemist-gold rounded hover:bg-alchemist-gold/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {keyStatus === 'testing' ? (
+                  <>
+                    <div className="w-3 h-3 border border-alchemist-gold border-t-transparent rounded-full animate-spin"></div>
+                    TESTING CONNECTION...
+                  </>
+                ) : keyStatus === 'valid' ? (
+                  <>
+                    <span className="text-green-400">✓</span> KEY VERIFIED
+                  </>
+                ) : keyStatus === 'invalid' ? (
+                  <>
+                    <span className="text-red-400">✗</span> TEST FAILED - TRY AGAIN
+                  </>
+                ) : (
+                  'TEST KEY'
+                )}
+              </button>
+
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={saveApiKey}
+                  disabled={!apiKey.trim() || keyStatus !== 'valid'}
+                  className="flex-1 py-3 text-xs bg-alchemist-gold text-alchemist-dark rounded font-bold hover:bg-alchemist-lightGold transition-all disabled:opacity-50 disabled:cursor-not-allowed shimmer-effect"
+                >
+                  ACTIVATE ORACLE
+                </button>
+                <button
+                  onClick={() => setShowKeyInput(false)}
+                  className="flex-1 py-3 text-xs border border-alchemist-maroon text-alchemist-ash rounded hover:border-alchemist-gold hover:text-alchemist-gold transition-all"
+                >
+                  SKIP FOR NOW
+                </button>
+              </div>
+              <p className="text-[10px] text-alchemist-ash mt-3 opacity-70">
+                Get your free key at{' '}
+                <a 
+                  href="https://aistudio.google.com/app/apikey" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-alchemist-gold hover:underline"
+                >
+                  Google AI Studio
+                </a>
+              </p>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center gap-2 text-left">
+              <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
+              <p className="text-xs text-red-300">{error}</p>
+            </div>
+          )}
+
+          {!response && !isThinking && !showKeyInput && (
             <div className="space-y-6">
               <p className="text-alchemist-ash font-light italic">
                 "State your ambition. I will consult the Codex to reveal the path."
               </p>
+              
+              {/* API Key Status */}
+              <div className="flex items-center justify-center gap-2">
+                {apiKey ? (
+                  <button
+                    onClick={() => setShowKeyInput(true)}
+                    className="text-[10px] text-alchemist-gold/70 hover:text-alchemist-gold flex items-center gap-1"
+                  >
+                    <Key size={10} />
+                    <span>API Key Configured</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowKeyInput(true)}
+                    className="text-[10px] text-alchemist-ash hover:text-alchemist-gold flex items-center gap-1"
+                  >
+                    <Key size={10} />
+                    <span>Configure API Key</span>
+                  </button>
+                )}
+              </div>
+
               <form onSubmit={handleDivination} className="space-y-4">
                 <input
                   type="text"
-                  placeholder="E.g., I want to scale my business..."
+                  placeholder="E.g., How do I scale my business?"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="w-full bg-alchemist-dark border border-alchemist-maroon focus:border-alchemist-gold rounded-lg px-4 py-3 text-alchemist-parchment placeholder-gray-600 outline-none transition-all text-center font-serif"
@@ -224,7 +419,7 @@ export default function AlchemistOracle() {
             <div className="py-12 space-y-4">
               <div className="w-12 h-12 border-2 border-alchemist-gold border-t-transparent rounded-full animate-spin mx-auto"></div>
               <p className="text-alchemist-gold text-sm tracking-widest animate-pulse">
-                CONSULTING THE CODEX...
+                THE ORACLE IS CHANNELING...
               </p>
             </div>
           )}

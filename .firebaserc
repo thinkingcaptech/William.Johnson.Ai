@@ -1,13 +1,8 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-firebase-debug.log*
-firebase-debug.*.log*
-
-# Firebase cache
+{
+  "projects": {
+    "default": "william-johnson-ai"
+  }
+}
 .firebase/
 
 # Firebase config
