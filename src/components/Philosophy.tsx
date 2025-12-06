@@ -17,14 +17,14 @@ export default function Philosophy() {
             title="The Alchemy of Influence"
             sub="THE MORAL MECHANICS OF BELIEF"
             desc="This book is not a list of tactics. It is a blueprint for transmutation. It reveals the operating system beneath the noise—a synthesis of modern systems thinking and ancient wisdom. Learn to move from performance to physics, from manipulation to mechanics."
-            downloadUrl="/downloads/The Alchemy of Influence Complete.pdf"
+            coverImage="/books/alchemy-of-influence.png"
           />
 
           <BookCard
             title="Ars Instido"
             sub="THE ARCHITECTURE OF RESONANCE"
             desc="Only through silence can the true frequency be heard. A guide to acoustic warfare, the myth of noise, and the vanishing architect. Discover how to design invisible systems that guide behavior without commanding it."
-            downloadUrl="/downloads/Ars Instido- The Architecture of Resonance.pdf"
+            coverImage="/books/ars-instido.png"
           />
         </div>
 

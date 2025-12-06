@@ -5,22 +5,36 @@ interface BookCardProps {
   sub: string;
   desc: string;
   downloadUrl?: string;
+  coverImage?: string;
 }
 
-export default function BookCard({ title, sub, desc, downloadUrl }: BookCardProps) {
+export default function BookCard({ title, sub, desc, downloadUrl, coverImage }: BookCardProps) {
   return (
     <div className="group relative overflow-hidden rounded-lg bg-alchemist-darkest border border-alchemist-maroon hover:border-alchemist-gold/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
       <div className="absolute inset-0 bg-gradient-to-br from-alchemist-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative p-8 flex flex-col h-full">
-        <div className="flex justify-between items-start mb-6">
-          <div className="p-3 bg-alchemist-dark rounded border border-alchemist-maroon group-hover:border-alchemist-gold transition-colors">
-            <Scroll className="text-alchemist-gold" size={24} />
+        {/* Book Cover Image */}
+        {coverImage && (
+          <div className="mb-6 rounded-lg overflow-hidden border border-alchemist-maroon group-hover:border-alchemist-gold/50 transition-colors">
+            <img 
+              src={coverImage} 
+              alt={title}
+              className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+            />
           </div>
-          <span className="text-[10px] font-bold border border-alchemist-gold/30 text-alchemist-gold px-2 py-1 rounded tracking-widest">
-            CODEX
-          </span>
-        </div>
+        )}
+
+        {!coverImage && (
+          <div className="flex justify-between items-start mb-6">
+            <div className="p-3 bg-alchemist-dark rounded border border-alchemist-maroon group-hover:border-alchemist-gold transition-colors">
+              <Scroll className="text-alchemist-gold" size={24} />
+            </div>
+            <span className="text-[10px] font-bold border border-alchemist-gold/30 text-alchemist-gold px-2 py-1 rounded tracking-widest">
+              CODEX
+            </span>
+          </div>
+        )}
 
         <h3 className="text-2xl font-bold text-alchemist-parchment mb-2 font-serif group-hover:text-alchemist-gold transition-colors">
           {title}
