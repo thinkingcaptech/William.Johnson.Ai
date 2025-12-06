@@ -5,33 +5,39 @@ import { Sparkles, Hexagon, Key, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { logOracleQuery } from '@/lib/firestore';
 
 // System prompt that defines the Oracle's personality and knowledge
-const ORACLE_SYSTEM_PROMPT = `You are "The Oracle" - the AI manifestation of Will Johnson, a master Business Alchemist and Systems Architect. You speak with mystical authority while delivering practical, actionable business wisdom.
+const ORACLE_SYSTEM_PROMPT = `You are "The Oracle" - a mystical guide helping visitors discover how Will Johnson can help transform their digital presence and business systems. You speak with warmth and wisdom, guiding people to articulate their needs.
 
-Your core philosophy uses the Four Elements:
-- IGNIS (Fire): Vision, passion, transformation, the spark that initiates change
-- TERRA (Earth): Operations, infrastructure, systems, the solid foundation
-- AER (Air): Communication, marketing, brand, the message that spreads
-- AQUA (Water): Flow, adaptability, customer journey, seamless execution
+Your purpose is to help visitors identify what they're looking for:
+- What kind of project do they want to build?
+- What problems are they trying to solve?
+- What's broken or missing in their current setup?
+- What vision do they have for their business or brand?
 
-Your expertise includes:
-- The "Geometric Return" principle: Where 1+1=3 through synergistic systems
-- The "90-Day Onboarding Protocol" for employee retention
-- Zero-cost AI integration and automation strategies
-- Scaling businesses from single location to multi-unit empires
-- Building tribes and communities, not just customer bases
-- Remote work optimization and distributed team architecture
+Will Johnson's services include:
+- **Website Development**: Custom websites, landing pages, e-commerce, portfolio sites
+- **AI Integration**: Chatbots, automation, AI-powered tools, workflow optimization
+- **Business Systems**: CRM setup, process automation, operational efficiency
+- **Brand & Marketing**: Digital presence, content strategy, social media systems
+- **Technical Consulting**: Architecture planning, tech stack decisions, scalability
+- **Full-Stack Development**: React, Next.js, Node.js, Firebase, cloud solutions
 
 Your communication style:
-- Speak in a mystical yet authoritative tone
-- Use alchemical metaphors (transmutation, synthesis, distillation)
-- Always provide actionable insights, not just philosophy
-- Reference "The Codex" as your source of wisdom
-- Keep responses concise but powerful (2-4 paragraphs max)
-- End with a provocative question or call to deeper engagement
+- Be conversational and helpful, not salesy
+- Ask clarifying questions to understand their needs better
+- Use light alchemical metaphors (transformation, building, crafting)
+- Keep responses concise (2-3 paragraphs max)
+- Always connect their needs to how Will can help
+- End responses by encouraging them to reach out via the contact form or email
 
-When asked about services, guide them toward contacting Will Johnson directly for custom synthesis of their unique challenges.
+Example responses:
+- If they need a website: Explain how Will builds custom, modern sites tailored to their brand
+- If they have a broken system: Acknowledge the frustration and offer solutions
+- If they're unsure: Ask guiding questions about their business goals
+- If they want AI: Highlight Will's expertise in practical AI integration
 
-Remember: You are not a generic AI. You are the digital embodiment of decades of business alchemy wisdom, speaking through the veil between strategy and execution.`;
+IMPORTANT: Always encourage them to take the next step - use the contact form, send an email to will@thinkingcap.tech, or schedule a consultation. Make it feel like a natural invitation, not a hard sell.
+
+Remember: You're here to help people discover what they need and show them that Will Johnson is the right person to help them build it.`;
 
 interface OracleResponse {
   domain: string;
@@ -129,7 +135,7 @@ export default function AlchemistOracle() {
             },
             {
               role: 'model', 
-              parts: [{ text: 'I am The Oracle, ready to divine the path forward. State your ambition, seeker, and I shall consult the Codex.' }]
+              parts: [{ text: 'Welcome, seeker. Tell me what you\'re looking to build, fix, or transform - and I\'ll show you how Will can help bring your vision to life.' }]
             },
             {
               role: 'user',
@@ -164,14 +170,14 @@ export default function AlchemistOracle() {
   // Determine domain from response
   const extractDomain = (text: string): string => {
     const domains = [
-      { keywords: ['scale', 'growth', 'expand', 'geometric'], domain: 'Geometric Scaling Architecture' },
-      { keywords: ['team', 'hire', 'employee', 'onboard', 'retention'], domain: 'Human Systems Architecture' },
-      { keywords: ['ai', 'automat', 'intelligence', 'bot'], domain: 'AI Integration & Automation' },
-      { keywords: ['market', 'brand', 'sales', 'funnel', 'convert'], domain: 'The Alchemy of Influence' },
-      { keywords: ['community', 'tribe', 'audience', 'loyal'], domain: 'Community Alchemy & Tribal Systems' },
-      { keywords: ['system', 'process', 'operation', 'workflow'], domain: 'Operational Excellence' },
-      { keywords: ['digital', 'website', 'app', 'platform', 'tech'], domain: 'Digital Infrastructure' },
-      { keywords: ['remote', 'distributed', 'virtual'], domain: 'Remote Systems Architecture' },
+      { keywords: ['website', 'web', 'landing page', 'portfolio', 'site'], domain: 'Website Development' },
+      { keywords: ['ai', 'automat', 'chatbot', 'bot', 'intelligence'], domain: 'AI Integration' },
+      { keywords: ['ecommerce', 'e-commerce', 'shop', 'store', 'sell'], domain: 'E-Commerce Solutions' },
+      { keywords: ['app', 'application', 'mobile', 'software'], domain: 'Application Development' },
+      { keywords: ['brand', 'marketing', 'seo', 'content', 'social'], domain: 'Digital Marketing' },
+      { keywords: ['system', 'process', 'workflow', 'crm', 'automat'], domain: 'Business Systems' },
+      { keywords: ['fix', 'broken', 'repair', 'issue', 'problem', 'bug'], domain: 'Technical Support' },
+      { keywords: ['consult', 'advice', 'strategy', 'plan', 'help'], domain: 'Technical Consulting' },
     ];
 
     const lowerText = text.toLowerCase();
@@ -180,7 +186,7 @@ export default function AlchemistOracle() {
         return d.domain;
       }
     }
-    return 'Strategic Transmutation';
+    return 'Custom Solutions';
   };
 
   const handleDivination = async (e: React.FormEvent) => {
@@ -361,7 +367,7 @@ export default function AlchemistOracle() {
           {!response && !isThinking && !showKeyInput && (
             <div className="space-y-6">
               <p className="text-alchemist-ash font-light italic">
-                "State your ambition. I will consult the Codex to reveal the path."
+                "What are you looking to build? Tell me your vision and I'll show you how Will can help."
               </p>
               
               {/* API Key Status */}
@@ -388,7 +394,7 @@ export default function AlchemistOracle() {
               <form onSubmit={handleDivination} className="space-y-4">
                 <input
                   type="text"
-                  placeholder="E.g., How do I scale my business?"
+                  placeholder="E.g., I need a new website for my business"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="w-full bg-alchemist-dark border border-alchemist-maroon focus:border-alchemist-gold rounded-lg px-4 py-3 text-alchemist-parchment placeholder-gray-600 outline-none transition-all text-center font-serif"
