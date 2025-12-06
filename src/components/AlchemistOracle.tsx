@@ -39,6 +39,120 @@ IMPORTANT: Always encourage them to take the next step - use the contact form, s
 
 Remember: You're here to help people discover what they need and show them that Will Johnson is the right person to help them build it.`;
 
+// Keyword-based fallback responses when no API key is configured
+const FALLBACK_RESPONSES = [
+  {
+    keywords: ['website', 'web', 'site', 'landing page', 'portfolio', 'homepage'],
+    domain: 'Website Development',
+    response: `It sounds like you're looking to build or improve your web presence! Will specializes in crafting custom websites that truly represent your brand - from sleek portfolio sites to full-featured business platforms.
+
+Whether you need a simple landing page or a complete website overhaul, Will builds modern, responsive sites using the latest technologies like Next.js and React. Every site is tailored to your unique needs and designed to convert visitors into customers.
+
+Ready to bring your vision to life? Reach out via the contact form below or email will@tctcusa.com to start the conversation!`
+  },
+  {
+    keywords: ['ai', 'chatbot', 'bot', 'automation', 'automate', 'artificial intelligence', 'gpt', 'machine learning'],
+    domain: 'AI Integration',
+    response: `You're interested in AI - excellent choice! Will has deep expertise in practical AI integration that actually delivers results, not just hype.
+
+From intelligent chatbots that handle customer inquiries to workflow automation that saves hours of manual work, Will can help you harness the power of AI without the complexity. He specializes in "zero-cost" AI solutions that maximize value while minimizing overhead.
+
+Curious how AI could transform your business? Send a message through the contact form or email will@tctcusa.com to explore the possibilities!`
+  },
+  {
+    keywords: ['ecommerce', 'e-commerce', 'shop', 'store', 'sell', 'products', 'online store', 'shopping'],
+    domain: 'E-Commerce Solutions',
+    response: `Looking to sell online? Will can help you build an e-commerce platform that's not just functional, but exceptional.
+
+From product catalogs and shopping carts to payment processing and inventory management, Will creates online stores that make buying easy for your customers and managing easy for you. Whether you're starting fresh or upgrading an existing store, he'll craft a solution tailored to your business.
+
+Ready to start selling? Drop a message via the contact form or email will@tctcusa.com to discuss your e-commerce vision!`
+  },
+  {
+    keywords: ['app', 'application', 'mobile', 'software', 'platform', 'tool', 'dashboard'],
+    domain: 'Application Development',
+    response: `So you're thinking about building an application - that's exciting! Will develops custom software solutions that solve real problems.
+
+Whether it's a web application, internal tool, or customer-facing platform, Will builds robust, scalable applications using modern technologies. He focuses on creating intuitive user experiences backed by solid architecture that grows with your needs.
+
+Have an app idea you'd like to explore? Reach out through the contact form or email will@tctcusa.com to start mapping out your project!`
+  },
+  {
+    keywords: ['brand', 'marketing', 'seo', 'content', 'social media', 'digital presence', 'visibility'],
+    domain: 'Digital Marketing',
+    response: `You want to amplify your digital presence - smart thinking! In today's world, visibility is everything.
+
+Will helps businesses build comprehensive digital strategies that go beyond just having a website. From SEO optimization to content systems and social media integration, he creates cohesive digital ecosystems that attract and engage your target audience.
+
+Ready to boost your brand's digital footprint? Connect via the contact form or email will@tctcusa.com to discuss your marketing goals!`
+  },
+  {
+    keywords: ['system', 'process', 'workflow', 'crm', 'efficiency', 'operations', 'organize', 'streamline'],
+    domain: 'Business Systems',
+    response: `You're looking to optimize your business systems - that's where real transformation happens! Will specializes in building operational infrastructure that makes everything run smoother.
+
+From CRM setup and process automation to custom workflow tools, Will creates systems that eliminate bottlenecks and free up your time for what matters most. He understands that good systems are the foundation of scalable growth.
+
+Want to streamline your operations? Send a message through the contact form or email will@tctcusa.com to start optimizing!`
+  },
+  {
+    keywords: ['fix', 'broken', 'repair', 'issue', 'problem', 'bug', 'error', 'not working', 'help'],
+    domain: 'Technical Support',
+    response: `Something's not working right? Will can help diagnose and fix the issue. There's nothing more frustrating than technology that won't cooperate.
+
+Whether it's a buggy website, a broken integration, or a system that's just not performing like it should, Will has the technical expertise to identify the problem and implement a lasting solution. He believes in fixing things properly, not just patching them.
+
+Need something fixed? Reach out via the contact form or email will@tctcusa.com and describe what's going wrong!`
+  },
+  {
+    keywords: ['consult', 'advice', 'strategy', 'plan', 'guidance', 'recommend', 'should i', 'what do you think'],
+    domain: 'Technical Consulting',
+    response: `Looking for expert guidance? Sometimes you need a knowledgeable partner to help you navigate technical decisions.
+
+Will offers consulting services to help you plan your technical architecture, choose the right tools, and develop strategies that align with your business goals. Whether you're starting a new project or evaluating your current setup, he can provide clarity and direction.
+
+Ready for a strategic conversation? Connect through the contact form or email will@tctcusa.com to schedule a consultation!`
+  },
+  {
+    keywords: ['price', 'cost', 'how much', 'budget', 'affordable', 'quote', 'estimate'],
+    domain: 'Project Inquiry',
+    response: `Great question about pricing! Every project is unique, so Will provides custom quotes based on your specific needs and scope.
+
+He believes in transparent, fair pricing and will work with you to find a solution that fits your budget. Whether it's a small landing page or a complex application, you'll get a clear breakdown of what's involved.
+
+Want to get a quote? Send your project details through the contact form or email will@tctcusa.com - the more details you share, the more accurate the estimate!`
+  }
+];
+
+// Default fallback when no keywords match
+const DEFAULT_FALLBACK = {
+  domain: 'Custom Solutions',
+  response: `Thanks for reaching out! I'd love to learn more about what you're looking for.
+
+Will Johnson offers a wide range of digital services including website development, AI integration, business systems, e-commerce, and technical consulting. Whatever your vision, he can help bring it to life with modern, tailored solutions.
+
+To get started, reach out via the contact form below or email will@tctcusa.com with details about your project. The more you share, the better Will can understand how to help!`
+};
+
+// Find matching fallback response based on keywords
+const getFallbackResponse = (userQuery: string): OracleResponse => {
+  const lowerQuery = userQuery.toLowerCase();
+  
+  for (const item of FALLBACK_RESPONSES) {
+    if (item.keywords.some(keyword => lowerQuery.includes(keyword))) {
+      return {
+        domain: item.domain,
+        insight: item.response
+      };
+    }
+  }
+  
+  return {
+    domain: DEFAULT_FALLBACK.domain,
+    insight: DEFAULT_FALLBACK.response
+  };
+};
+
 interface OracleResponse {
   domain: string;
   insight: string;
@@ -193,15 +307,32 @@ export default function AlchemistOracle() {
     e.preventDefault();
     if (!query.trim()) return;
 
-    if (!apiKey) {
-      setShowKeyInput(true);
-      setError('Please enter your Gemini API key to consult The Oracle');
-      return;
-    }
-
     setIsThinking(true);
     setResponse(null);
     setError(null);
+
+    // If no API key, use fallback keyword-based responses
+    if (!apiKey) {
+      // Simulate a brief "thinking" delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const fallbackResponse = getFallbackResponse(query);
+      setResponse(fallbackResponse);
+      setAnimatedText('');
+      setIsThinking(false);
+
+      // Log query to Firebase (optional, non-blocking)
+      try {
+        await logOracleQuery({
+          query: query,
+          domain: fallbackResponse.domain,
+          insight: fallbackResponse.insight
+        });
+      } catch (logError) {
+        console.log('Oracle query logged locally only');
+      }
+      return;
+    }
 
     try {
       const oracleResponse = await callGemini(query);
